@@ -3,6 +3,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "FrmPeminjaman",
+            "request": "launch",
+            "mainClass": "frontend.FrmPeminjaman",
+            "projectName": "Perpustakaan_d0115eeb"
+        },
+        {
+            "type": "java",
+            "name": "FrmBuku",
+            "request": "launch",
+            "mainClass": "frontend.FrmBuku",
+            "projectName": "Perpustakaan_d0115eeb"
+        },
+        {
+            "type": "java",
             "name": "FrmAnggota",
             "request": "launch",
             "mainClass": "frontend.FrmAnggota",

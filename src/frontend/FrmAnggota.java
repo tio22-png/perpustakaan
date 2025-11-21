@@ -4,6 +4,10 @@ import backend.Anggota;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -52,6 +56,31 @@ public class FrmAnggota extends JFrame {
 
         txtTelepon = new JTextField();
         txtTelepon.setBounds(130, 140, 150, 25);
+
+        // Filter hanya angka untuk telepon
+        PlainDocument doc = (PlainDocument) txtTelepon.getDocument();
+        doc.setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                    throws BadLocationException {
+                if (string == null)
+                    return;
+                if (string.matches("\\d*")) {
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                    throws BadLocationException {
+                if (text == null)
+                    return;
+                if (text.matches("\\d*")) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+
         add(txtTelepon);
 
         // === Tombol ===
@@ -120,7 +149,26 @@ public class FrmAnggota extends JFrame {
 
     public void cari(String keyword) {
         model.setRowCount(0);
-        ArrayList<Anggota> list = Anggota.search(keyword);
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // kosong -> tampilkan semua
+            tampilkanData();
+            return;
+        }
+
+        String kw = keyword.trim();
+        // Jika keyword hanya angka, coba cari berdasarkan ID
+        try {
+            int id = Integer.parseInt(kw);
+            Anggota a = Anggota.getById(id);
+            if (a != null) {
+                model.addRow(new Object[] { a.getIdanggota(), a.getNama(), a.getAlamat(), a.getTelepon() });
+            }
+            return;
+        } catch (NumberFormatException ex) {
+            // bukan angka -> lanjut ke pencarian teks
+        }
+
+        ArrayList<Anggota> list = Anggota.search(kw);
         for (Anggota a : list) {
             model.addRow(new Object[] { a.getIdanggota(), a.getNama(), a.getAlamat(), a.getTelepon() });
         }

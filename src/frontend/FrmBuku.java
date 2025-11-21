@@ -157,7 +157,27 @@ public class FrmBuku extends JFrame {
 
     private void cari(String keyword) {
         model.setRowCount(0);
-        ArrayList<Buku> list = Buku.search(keyword);
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // kosong -> tampilkan semua
+            tampilkanData();
+            return;
+        }
+
+        String kw = keyword.trim();
+        // Jika keyword hanya angka, coba cari berdasarkan ID
+        try {
+            int id = Integer.parseInt(kw);
+            Buku b = Buku.getById(id);
+            if (b != null) {
+                model.addRow(new Object[] { b.getIdbuku(), b.getKategori().getNama(), b.getJudul(), b.getPenerbit(),
+                        b.getPenulis() });
+            }
+            return;
+        } catch (NumberFormatException ex) {
+            // bukan angka -> lanjut ke pencarian teks
+        }
+
+        ArrayList<Buku> list = Buku.search(kw);
         for (Buku b : list) {
             model.addRow(new Object[] { b.getIdbuku(), b.getKategori().getNama(), b.getJudul(), b.getPenerbit(),
                     b.getPenulis() });
